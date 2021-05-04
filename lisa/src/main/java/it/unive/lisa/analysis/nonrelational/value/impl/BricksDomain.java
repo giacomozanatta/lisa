@@ -22,7 +22,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
     @Override
     public boolean equals(Object obj) {
-        return false;
+        return true;
     }
 
     @Override
