@@ -6,6 +6,8 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.lattices.SetLattice;
 import it.unive.lisa.analysis.nonrelational.heap.HeapEnvironment;
 import it.unive.lisa.analysis.nonrelational.heap.NonRelationalHeapDomain;
+import it.unive.lisa.analysis.representation.DomainRepresentation;
+import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -110,13 +112,8 @@ public class AllocationSites extends SetLattice<AllocationSites, AllocationSite>
 	}
 
 	@Override
-	public String representation() {
-		return super.toString();
-	}
-
-	@Override
-	public ExpressionSet<ValueExpression> getRewrittenExpressions() {
-		return new ExpressionSet<ValueExpression>();
+	public DomainRepresentation representation() {
+		return new StringRepresentation(toString());
 	}
 
 	@Override
@@ -161,5 +158,11 @@ public class AllocationSites extends SetLattice<AllocationSites, AllocationSite>
 			SymbolicExpression expression,
 			ProgramPoint pp) throws SemanticException {
 		return environment;
+	}
+
+	@Override
+	public ExpressionSet<ValueExpression> rewrite(SymbolicExpression expression,
+			HeapEnvironment<AllocationSites> environment, ProgramPoint pp) throws SemanticException {
+		return new ExpressionSet<>();
 	}
 }

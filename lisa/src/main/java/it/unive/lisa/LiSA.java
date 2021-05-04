@@ -9,7 +9,7 @@ import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.impl.types.InferredTypes;
-import it.unive.lisa.analysis.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
@@ -201,7 +201,7 @@ public class LiSA {
 		if (conf.isDumpAnalysis())
 			for (CFG cfg : IterationLogger.iterate(log, allCFGs, "Dumping analysis results", "cfgs")) {
 				CFGWithAnalysisResults<A, H, V> result = callGraph.getAnalysisResultsOf(cfg);
-				dumpCFG("analysis___", result, st -> result.getAnalysisStateAt(st).toString());
+				dumpCFG("analysis___", result, st -> result.getAnalysisStateAt(st).representation().toString());
 			}
 	}
 
@@ -238,7 +238,7 @@ public class LiSA {
 			CFGWithAnalysisResults<SimpleAbstractState<H, InferenceSystem<InferredTypes>>, H,
 					InferenceSystem<InferredTypes>> result = callGraph.getAnalysisResultsOf(cfg);
 			if (conf.isDumpTypeInference())
-				dumpCFG("typing___", result, st -> result.getAnalysisStateAt(st).toString());
+				dumpCFG("typing___", result, st -> result.getAnalysisStateAt(st).representation().toString());
 			cfg.accept(new TypesPropagator<>(), result);
 		}
 
