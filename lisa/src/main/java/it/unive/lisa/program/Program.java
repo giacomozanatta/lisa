@@ -38,7 +38,7 @@ public class Program extends Unit {
 	 * Builds an empty program.
 	 */
 	public Program() {
-		super(PROGRAM_NAME);
+		super(null, PROGRAM_NAME);
 		units = new ConcurrentHashMap<>();
 		types = new ArrayList<>();
 	}

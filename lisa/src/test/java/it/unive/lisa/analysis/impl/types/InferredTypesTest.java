@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.nonrelational.inference.InferredValue.InferredPair;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -160,10 +159,10 @@ public class InferredTypesTest {
 
 	private void unaryLE(UnaryOperator op, InferredTypes expected, InferredTypes operand) throws SemanticException {
 		for (Entry<String, InferredTypes> first : combos.entrySet()) {
-			InferredPair<InferredTypes> eval = domain.evalUnaryExpression(op, first.getValue(), domain.bottom(), fake);
+			InferredTypes eval = domain.evalUnaryExpression(op, first.getValue(), fake);
 			if (operand.lessOrEqual(first.getValue())) {
 				assertFalse(String.format(UNEXPECTED_BOTTOM, op.name(), first.getKey()), eval.isBottom());
-				assertEquals(String.format(WRONG_RESULT, op.name(), first.getKey()), expected, eval.getInferred());
+				assertEquals(String.format(WRONG_RESULT, op.name(), first.getKey()), expected, eval);
 			} else
 				assertTrue(String.format(RESULT_NOT_BOTTOM, op.name(), first.getKey()), eval.isBottom());
 		}
@@ -171,11 +170,11 @@ public class InferredTypesTest {
 
 	private void unaryMapping(UnaryOperator op, Map<InferredTypes, InferredTypes> expected) throws SemanticException {
 		for (Entry<String, InferredTypes> first : combos.entrySet()) {
-			InferredPair<InferredTypes> eval = domain.evalUnaryExpression(op, first.getValue(), domain.bottom(), fake);
+			InferredTypes eval = domain.evalUnaryExpression(op, first.getValue(), fake);
 			if (expected.containsKey(first.getValue())) {
 				assertFalse(String.format(UNEXPECTED_BOTTOM, op.name(), first.getKey()), eval.isBottom());
 				assertEquals(String.format(WRONG_RESULT, op.name(), first.getKey()), expected.get(first.getValue()),
-						eval.getInferred());
+						eval);
 			} else
 				assertTrue(String.format(RESULT_NOT_BOTTOM, op.name(), first.getKey()), eval.isBottom());
 		}
@@ -200,13 +199,12 @@ public class InferredTypesTest {
 			throws SemanticException {
 		for (Entry<String, InferredTypes> first : combos.entrySet())
 			for (Entry<String, InferredTypes> second : combos.entrySet()) {
-				InferredPair<InferredTypes> eval = domain.evalBinaryExpression(op, first.getValue(), second.getValue(),
-						domain.bottom(), fake);
+				InferredTypes eval = domain.evalBinaryExpression(op, first.getValue(), second.getValue(), fake);
 				if (left.lessOrEqual(first.getValue()) && right.lessOrEqual(second.getValue())) {
 					assertFalse(String.format(UNEXPECTED_BOTTOM, op.name(), first.getKey() + "," + second.getKey()),
 							eval.isBottom());
 					assertEquals(String.format(WRONG_RESULT, op.name(), first.getKey() + "," + second.getKey()),
-							expected, eval.getInferred());
+							expected, eval);
 				} else
 					assertTrue(String.format(RESULT_NOT_BOTTOM, op.name(), first.getKey() + "," + second.getKey()),
 							eval.isBottom());
@@ -218,13 +216,12 @@ public class InferredTypesTest {
 			throws SemanticException {
 		for (Entry<String, InferredTypes> first : combos.entrySet())
 			for (Entry<String, InferredTypes> second : combos.entrySet()) {
-				InferredPair<InferredTypes> eval = domain.evalBinaryExpression(op, first.getValue(), second.getValue(),
-						domain.bottom(), fake);
+				InferredTypes eval = domain.evalBinaryExpression(op, first.getValue(), second.getValue(), fake);
 				if (notExcluded(exclusions, first, second)) {
 					assertFalse(String.format(UNEXPECTED_BOTTOM, op.name(), first.getKey() + "," + second.getKey()),
 							eval.isBottom());
 					assertEquals(String.format(WRONG_RESULT, op.name(), first.getKey() + "," + second.getKey()),
-							expected, eval.getInferred());
+							expected, eval);
 				} else
 					assertTrue(String.format(RESULT_NOT_BOTTOM, op.name(), first.getKey() + "," + second.getKey()),
 							eval.isBottom());
@@ -245,13 +242,12 @@ public class InferredTypesTest {
 			throws SemanticException {
 		for (Entry<String, InferredTypes> first : combos.entrySet())
 			for (Entry<String, InferredTypes> second : combos.entrySet()) {
-				InferredPair<InferredTypes> eval = domain.evalBinaryExpression(op, first.getValue(), second.getValue(),
-						domain.bottom(), fake);
+				InferredTypes eval = domain.evalBinaryExpression(op, first.getValue(), second.getValue(), fake);
 				if (notExcluded(exclusions, first, second)) {
 					assertFalse(String.format(UNEXPECTED_BOTTOM, op.name(), first.getKey() + "," + second.getKey()),
 							eval.isBottom());
 					assertEquals(String.format(WRONG_RESULT, op.name(), first.getKey() + "," + second.getKey()),
-							expected.apply(first.getValue(), second.getValue()), eval.getInferred());
+							expected.apply(first.getValue(), second.getValue()), eval);
 				} else
 					assertTrue(String.format(RESULT_NOT_BOTTOM, op.name(), first.getKey() + "," + second.getKey()),
 							eval.isBottom());
@@ -264,17 +260,15 @@ public class InferredTypesTest {
 		for (Entry<String, InferredTypes> first : combos.entrySet())
 			for (Entry<String, InferredTypes> second : combos.entrySet()) {
 				InferredTypes st = transformer.apply(second.getValue());
-				InferredPair<InferredTypes> eval = domain.evalBinaryExpression(op, first.getValue(), second.getValue(),
-						domain.bottom(), fake);
-				InferredPair<InferredTypes> evalT = domain.evalBinaryExpression(op, first.getValue(), st,
-						domain.bottom(), fake);
+				InferredTypes eval = domain.evalBinaryExpression(op, first.getValue(), second.getValue(), fake);
+				InferredTypes evalT = domain.evalBinaryExpression(op, first.getValue(), st, fake);
 				assertTrue(String.format(RESULT_NOT_BOTTOM, op.name(), first.getKey() + "," + second.getKey()),
 						eval.isBottom());
 				// we don't check for bottom: it might be the right result...
 				assertEquals(
 						String.format(WRONG_RESULT, op.name(),
 								first.getKey() + "," + second.getKey() + "[transformed to " + st + "]"),
-						expected.apply(first.getValue(), st), evalT.getInferred());
+						expected.apply(first.getValue(), st), evalT);
 			}
 	}
 
@@ -341,8 +335,8 @@ public class InferredTypesTest {
 		for (Entry<String, InferredTypes> first : combos.entrySet())
 			for (Entry<String, InferredTypes> second : combos.entrySet())
 				for (Entry<String, InferredTypes> third : combos.entrySet()) {
-					InferredPair<InferredTypes> eval = domain.evalTernaryExpression(op, first.getValue(),
-							second.getValue(), third.getValue(), domain.bottom(), fake);
+					InferredTypes eval = domain.evalTernaryExpression(op, first.getValue(),
+							second.getValue(), third.getValue(), fake);
 					if (left.lessOrEqual(first.getValue()) && middle.lessOrEqual(second.getValue())
 							&& right.lessOrEqual(third.getValue())) {
 						assertFalse(
@@ -350,8 +344,7 @@ public class InferredTypesTest {
 										first.getKey() + "," + second.getKey() + "," + third.getKey()),
 								eval.isBottom());
 						assertEquals(String.format(WRONG_RESULT, op.name(),
-								first.getKey() + "," + second.getKey() + "," + third.getKey()), expected,
-								eval.getInferred());
+								first.getKey() + "," + second.getKey() + "," + third.getKey()), expected, eval);
 					} else
 						assertTrue(
 								String.format(RESULT_NOT_BOTTOM, op.name(),

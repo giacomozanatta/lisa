@@ -5,8 +5,6 @@ import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
@@ -63,19 +61,15 @@ public class Parity extends BaseNonRelationalValueDomain<Parity> {
 	}
 
 	@Override
-	public DomainRepresentation representation() {
-		if (isBottom())
-			return Lattice.BOTTOM_REPR;
-		if (isTop())
-			return Lattice.TOP_REPR;
-
-		String repr;
-		if (this == EVEN)
-			repr = "Even";
+	public String representation() {
+		if (equals(BOTTOM))
+			return Lattice.BOTTOM_STRING;
+		else if (equals(EVEN))
+			return "Even";
+		else if (equals(ODD))
+			return "Odd";
 		else
-			repr = "Odd";
-
-		return new StringRepresentation(repr);
+			return Lattice.TOP_STRING;
 	}
 
 	@Override
