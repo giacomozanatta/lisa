@@ -1,7 +1,5 @@
 package it.unive.lisa.program;
 
-import it.unive.lisa.program.annotations.Annotation;
-import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
@@ -16,30 +14,39 @@ import java.util.Objects;
 public class Global implements CodeElement {
 
 	/**
-	 * The name of this global variable
+	 * The name of this parameter
 	 */
 	private final String name;
 
 	/**
-	 * The static type of this global variable
+	 * The static type of this parameter
 	 */
 	private final Type staticType;
 
 	private final CodeLocation location;
 
-	private Annotations annotations;
+	/**
+	 * Builds an untyped parameter reference, identified by its name. The
+	 * location where this parameter reference happens is unknown (i.e. no
+	 * source file/line/column is available) as well as its type (i.e. it is
+	 * {#link Untyped#INSTANCE}).
+	 * 
+	 * @param name the name of this parameter
+	 */
+	public Global(String name) {
+		this(name, Untyped.INSTANCE);
+	}
 
 	/**
-	 * Builds an untyped global variable, identified by its name. The location
-	 * where this parameter reference happens is unknown (i.e. no source
-	 * file/line/column is available) as well as its type (i.e. it is {#link
-	 * Untyped#INSTANCE}).
+	 * Builds a typed parameter reference, identified by its name and its type.
+	 * The location where this parameter reference happens is unknown (i.e. no
+	 * source file/line/column is available).
 	 * 
-	 * @param location the location of this global variable
-	 * @param name     the name of this parameter
+	 * @param name       the name of this parameter
+	 * @param staticType the type of this parameter
 	 */
-	public Global(CodeLocation location, String name) {
-		this(location, name, Untyped.INSTANCE);
+	public Global(String name, Type staticType) {
+		this(null, name, staticType);
 	}
 
 	/**
@@ -53,28 +60,11 @@ public class Global implements CodeElement {
 	 *                       {@link Untyped#INSTANCE}
 	 */
 	public Global(CodeLocation location, String name, Type staticType) {
-		this(location, name, staticType, new Annotations());
-	}
-
-	/**
-	 * Builds the parameter reference, identified by its name and its type,
-	 * happening at the given location in the program.
-	 * 
-	 * @param location    the location where this parameter is defined within
-	 *                        the source file. If unknown, use {@code null}
-	 * @param name        the name of this parameter
-	 * @param staticType  the type of this parameter. If unknown, use
-	 *                        {@link Untyped#INSTANCE}
-	 * @param annotations the annotations of this global variable
-	 */
-	public Global(CodeLocation location, String name, Type staticType, Annotations annotations) {
 		Objects.requireNonNull(name, "The name of a parameter cannot be null");
 		Objects.requireNonNull(staticType, "The type of a parameter cannot be null");
-		Objects.requireNonNull(location, "The location of a parameter cannot be null");
 		this.location = location;
 		this.name = name;
 		this.staticType = staticType;
-		this.annotations = annotations;
 	}
 
 	/**
@@ -101,7 +91,6 @@ public class Global implements CodeElement {
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((staticType == null) ? 0 : staticType.hashCode());
-		result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
 		return result;
 	}
 
@@ -124,11 +113,6 @@ public class Global implements CodeElement {
 				return false;
 		} else if (!staticType.equals(other.staticType))
 			return false;
-		if (annotations == null) {
-			if (other.annotations != null)
-				return false;
-		} else if (!annotations.equals(other.annotations))
-			return false;
 		return true;
 	}
 
@@ -140,23 +124,5 @@ public class Global implements CodeElement {
 	@Override
 	public CodeLocation getLocation() {
 		return location;
-	}
-
-	/**
-	 * Yields the annotations of this global element.
-	 * 
-	 * @return the annotations of this global element
-	 */
-	public Annotations getAnnotations() {
-		return annotations;
-	}
-
-	/**
-	 * Adds an annotation to the annotations of this global.
-	 * 
-	 * @param ann the annotation to be added
-	 */
-	public void addAnnotation(Annotation ann) {
-		annotations.addAnnotation(ann);
 	}
 }

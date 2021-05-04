@@ -1,8 +1,6 @@
 package it.unive.lisa.program.cfg;
 
 import it.unive.lisa.program.CodeElement;
-import it.unive.lisa.program.annotations.Annotation;
-import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
@@ -50,25 +48,25 @@ public class VariableTableEntry implements CodeElement {
 	 */
 	private CodeLocation location;
 
-	private Annotations annotations;
-
 	/**
-	 * Builds an untyped variable table entry, identified by its index. Its type
-	 * is unknown (i.e. it is {#link Untyped#INSTANCE}).
+	 * Builds an untyped variable table entry, identified by its index. The
+	 * location where the variable is defined is unknown (i.e. no source
+	 * file/line/column is available) as well as its type (i.e. it is {#link
+	 * Untyped#INSTANCE}).
 	 * 
-	 * @param location the location of this variable
-	 * @param index    the index of the variable entry
-	 * @param name     the name of this variable
+	 * @param index the index of the variable entry
+	 * @param name  the name of this variable
 	 */
-	public VariableTableEntry(CodeLocation location, int index, String name) {
-		this(location, index, null, null, name, Untyped.INSTANCE);
+	public VariableTableEntry(int index, String name) {
+		this(null, index, null, null, name, Untyped.INSTANCE);
 	}
 
 	/**
-	 * Builds an untyped variable table entry, identified by its index. Its type
-	 * is unknown (i.e. it is {#link Untyped#INSTANCE}).
+	 * Builds an untyped variable table entry, identified by its index. The
+	 * location where the variable is defined is unknown (i.e. no source
+	 * file/line/column is available) as well as its type (i.e. it is {#link
+	 * Untyped#INSTANCE}).
 	 * 
-	 * @param location   the location of this variable
 	 * @param index      the index of the variable entry
 	 * @param scopeStart the statement where this variable is first visible,
 	 *                       {@code null} means that this variable is visible
@@ -78,8 +76,27 @@ public class VariableTableEntry implements CodeElement {
 	 *                       until the end of the cfg
 	 * @param name       the name of this variable
 	 */
-	public VariableTableEntry(CodeLocation location, int index, Statement scopeStart, Statement scopeEnd, String name) {
-		this(location, index, scopeStart, scopeEnd, name, Untyped.INSTANCE);
+	public VariableTableEntry(int index, Statement scopeStart, Statement scopeEnd, String name) {
+		this(null, index, scopeStart, scopeEnd, name, Untyped.INSTANCE);
+	}
+
+	/**
+	 * Builds a typed variable table entry, identified by its index. The
+	 * location where the variable is defined is unknown (i.e. no source
+	 * file/line/column is available).
+	 * 
+	 * @param index      the index of the variable entry
+	 * @param scopeStart the statement where this variable is first visible,
+	 *                       {@code null} means that this variable is visible
+	 *                       since the beginning of the cfg
+	 * @param scopeEnd   the statement where this variable is last visible,
+	 *                       {@code null} means that this variable is visible
+	 *                       until the end of the cfg
+	 * @param name       the name of this variable
+	 * @param staticType the type of this variable
+	 */
+	public VariableTableEntry(int index, Statement scopeStart, Statement scopeEnd, String name, Type staticType) {
+		this(null, index, scopeStart, scopeEnd, name, staticType);
 	}
 
 	/**
@@ -87,7 +104,7 @@ public class VariableTableEntry implements CodeElement {
 	 * variable defined at the given location in the program.
 	 * 
 	 * @param location   the location where the expression is defined within the
-	 *                       source file.
+	 *                       source file. If unknown, use {@code null}
 	 * @param index      the index of the variable entry
 	 * @param scopeStart the statement where this variable is first visible,
 	 *                       {@code null} means that this variable is visible
@@ -101,40 +118,14 @@ public class VariableTableEntry implements CodeElement {
 	 */
 	public VariableTableEntry(CodeLocation location, int index, Statement scopeStart, Statement scopeEnd,
 			String name, Type staticType) {
-		this(location, index, scopeStart, scopeEnd, name, staticType, new Annotations());
-	}
-
-	/**
-	 * Builds the variable table entry with its annotations, identified by its
-	 * index, representing a variable defined at the given location in the
-	 * program.
-	 * 
-	 * @param location    the location where the expression is defined within
-	 *                        the source file.
-	 * @param index       the index of the variable entry
-	 * @param scopeStart  the statement where this variable is first visible,
-	 *                        {@code null} means that this variable is visible
-	 *                        since the beginning of the cfg
-	 * @param scopeEnd    the statement where this variable is last visible,
-	 *                        {@code null} means that this variable is visible
-	 *                        until the end of the cfg
-	 * @param name        the name of this variable
-	 * @param staticType  the type of this variable. If unknown, use
-	 *                        {@link Untyped#INSTANCE}
-	 * @param annotations the annotations of this variable
-	 */
-	public VariableTableEntry(CodeLocation location, int index, Statement scopeStart, Statement scopeEnd,
-			String name, Type staticType, Annotations annotations) {
 		Objects.requireNonNull(name, "The name of a variable cannot be null");
 		Objects.requireNonNull(staticType, "The type of a variable cannot be null");
-		Objects.requireNonNull(location, "The location of a variable cannot be null");
 		this.location = location;
 		this.index = index;
 		this.name = name;
 		this.staticType = staticType;
 		this.scopeStart = scopeStart;
 		this.scopeEnd = scopeEnd;
-		this.annotations = annotations;
 	}
 
 	/**
@@ -236,7 +227,6 @@ public class VariableTableEntry implements CodeElement {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + index;
-		result = prime * result + ((annotations == null) ? 0 : annotations.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((scopeStart == null) ? 0 : scopeStart.hashCode());
 		result = prime * result + ((scopeEnd == null) ? 0 : scopeEnd.hashCode());
@@ -274,11 +264,6 @@ public class VariableTableEntry implements CodeElement {
 				return false;
 		} else if (!location.equals(other.location))
 			return false;
-		if (annotations == null) {
-			if (other.annotations != null)
-				return false;
-		} else if (!annotations.equals(other.annotations))
-			return false;
 		return true;
 	}
 
@@ -290,23 +275,5 @@ public class VariableTableEntry implements CodeElement {
 	@Override
 	public CodeLocation getLocation() {
 		return location;
-	}
-
-	/**
-	 * Yields the annotations of this variable.
-	 * 
-	 * @return the annotations of this variable
-	 */
-	public Annotations getAnnotations() {
-		return annotations;
-	}
-
-	/**
-	 * Adds an annotation to the annotations of this variable table entry.
-	 * 
-	 * @param ann the annotation to be added
-	 */
-	public void addAnnotation(Annotation ann) {
-		annotations.addAnnotation(ann);
 	}
 }

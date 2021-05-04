@@ -28,7 +28,7 @@ import org.junit.Test;
 
 public class ConditionalsExtractionTest {
 
-	private static final CompilationUnit unit = new CompilationUnit(new SourceCodeLocation("fake", 0, 0), "Testing",
+	private static final CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(null, -1, -1), "Testing",
 			false);
 
 	@SafeVarargs
@@ -71,13 +71,12 @@ public class ConditionalsExtractionTest {
 
 	@Test
 	public void testSimpleIf() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("fake", 0, 0);
-		CFG cfg = new CFG(new CFGDescriptor(unknownLocation, unit, false, "simpleIf"));
-		IMPIntLiteral constant = new IMPIntLiteral(cfg, "fake", 0, 0, 5);
-		IMPNotEqual condition = new IMPNotEqual(cfg, "fake", 0, 0, constant, constant);
-		Assignment a1 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "l"), constant);
-		Assignment a2 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "r"), constant);
-		Return ret = new Return(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"));
+		CFG cfg = new CFG(new CFGDescriptor(unit, false, "simpleIf"));
+		IMPIntLiteral constant = new IMPIntLiteral(cfg, null, -1, -1, 5);
+		IMPNotEqual condition = new IMPNotEqual(cfg, null, -1, -1, constant, constant);
+		Assignment a1 = new Assignment(cfg, new VariableRef(cfg, "l"), constant);
+		Assignment a2 = new Assignment(cfg, new VariableRef(cfg, "r"), constant);
+		Return ret = new Return(cfg, new VariableRef(cfg, "x"));
 		cfg.addNode(condition, true);
 		cfg.addNode(a1);
 		cfg.addNode(a2);
@@ -99,11 +98,10 @@ public class ConditionalsExtractionTest {
 
 	@Test
 	public void testEmptyIf() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("fake", 0, 0);
-		CFG cfg = new CFG(new CFGDescriptor(unknownLocation, unit, false, "emptyIf"));
-		IMPIntLiteral constant = new IMPIntLiteral(cfg, "fake", 0, 0, 5);
-		IMPNotEqual condition = new IMPNotEqual(cfg, "fake", 0, 0, constant, constant);
-		Return ret = new Return(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"));
+		CFG cfg = new CFG(new CFGDescriptor(unit, false, "emptyIf"));
+		IMPIntLiteral constant = new IMPIntLiteral(cfg, null, -1, -1, 5);
+		IMPNotEqual condition = new IMPNotEqual(cfg, null, -1, -1, constant, constant);
+		Return ret = new Return(cfg, new VariableRef(cfg, "x"));
 		cfg.addNode(condition, true);
 		cfg.addNode(ret);
 
@@ -121,13 +119,12 @@ public class ConditionalsExtractionTest {
 
 	@Test
 	public void testIfWithEmptyBranch() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("fake", 0, 0);
-		CFG cfg = new CFG(new CFGDescriptor(unknownLocation, unit, false, "emptyBranch"));
-		IMPIntLiteral constant = new IMPIntLiteral(cfg, "fake", 0, 0, 5);
-		IMPNotEqual condition = new IMPNotEqual(cfg, "fake", 0, 0, constant, constant);
-		Assignment a1 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "l"), constant);
-		Assignment a2 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "r"), constant);
-		Return ret = new Return(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"));
+		CFG cfg = new CFG(new CFGDescriptor(unit, false, "emptyBranch"));
+		IMPIntLiteral constant = new IMPIntLiteral(cfg, null, -1, -1, 5);
+		IMPNotEqual condition = new IMPNotEqual(cfg, null, -1, -1, constant, constant);
+		Assignment a1 = new Assignment(cfg, new VariableRef(cfg, "l"), constant);
+		Assignment a2 = new Assignment(cfg, new VariableRef(cfg, "r"), constant);
+		Return ret = new Return(cfg, new VariableRef(cfg, "x"));
 		cfg.addNode(condition, true);
 		cfg.addNode(a1);
 		cfg.addNode(a2);
@@ -149,14 +146,13 @@ public class ConditionalsExtractionTest {
 
 	@Test
 	public void testAsymmetricIf() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("fake", 0, 0);
-		CFG cfg = new CFG(new CFGDescriptor(unknownLocation, unit, false, "asymmetricIf"));
-		IMPIntLiteral constant = new IMPIntLiteral(cfg, "fake", 0, 0, 10);
-		IMPNotEqual condition = new IMPNotEqual(cfg, "fake", 0, 0, constant, constant);
-		Assignment a1 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "l"), constant);
-		Assignment a2 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "r"), constant);
-		Assignment a3 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"), constant);
-		Return ret = new Return(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"));
+		CFG cfg = new CFG(new CFGDescriptor(unit, false, "asymmetricIf"));
+		IMPIntLiteral constant = new IMPIntLiteral(cfg, null, -1, -1, 10);
+		IMPNotEqual condition = new IMPNotEqual(cfg, null, -1, -1, constant, constant);
+		Assignment a1 = new Assignment(cfg, new VariableRef(cfg, "l"), constant);
+		Assignment a2 = new Assignment(cfg, new VariableRef(cfg, "r"), constant);
+		Assignment a3 = new Assignment(cfg, new VariableRef(cfg, "x"), constant);
+		Return ret = new Return(cfg, new VariableRef(cfg, "x"));
 		cfg.addNode(condition, true);
 		cfg.addNode(a1);
 		cfg.addNode(a2);
@@ -180,17 +176,16 @@ public class ConditionalsExtractionTest {
 
 	@Test
 	public void testBigAsymmetricIf() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("fake", 0, 0);
-		CFG cfg = new CFG(new CFGDescriptor(unknownLocation, unit, false, "bigAsymmetricIf"));
-		IMPIntLiteral constant = new IMPIntLiteral(cfg, "fake", 0, 0, 15);
-		IMPNotEqual condition = new IMPNotEqual(cfg, "fake", 0, 0, constant, constant);
-		Assignment a1 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "l"), constant);
-		Assignment a2 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "r"), constant);
-		Assignment a3 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"), constant);
-		Assignment a4 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "y"), constant);
-		Assignment a5 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "z"), constant);
-		Assignment a6 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "w"), constant);
-		Return ret = new Return(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"));
+		CFG cfg = new CFG(new CFGDescriptor(unit, false, "bigAsymmetricIf"));
+		IMPIntLiteral constant = new IMPIntLiteral(cfg, null, -1, -1, 15);
+		IMPNotEqual condition = new IMPNotEqual(cfg, null, -1, -1, constant, constant);
+		Assignment a1 = new Assignment(cfg, new VariableRef(cfg, "l"), constant);
+		Assignment a2 = new Assignment(cfg, new VariableRef(cfg, "r"), constant);
+		Assignment a3 = new Assignment(cfg, new VariableRef(cfg, "x"), constant);
+		Assignment a4 = new Assignment(cfg, new VariableRef(cfg, "y"), constant);
+		Assignment a5 = new Assignment(cfg, new VariableRef(cfg, "z"), constant);
+		Assignment a6 = new Assignment(cfg, new VariableRef(cfg, "w"), constant);
+		Return ret = new Return(cfg, new VariableRef(cfg, "x"));
 		cfg.addNode(condition, true);
 		cfg.addNode(a1);
 		cfg.addNode(a2);
@@ -220,13 +215,12 @@ public class ConditionalsExtractionTest {
 
 	@Test
 	public void testSimpleLoop() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("fake", 0, 0);
-		CFG cfg = new CFG(new CFGDescriptor(unknownLocation, unit, false, "simpleLoop"));
-		IMPIntLiteral constant = new IMPIntLiteral(cfg, "fake", 0, 0, 5);
-		IMPNotEqual condition = new IMPNotEqual(cfg, "fake", 0, 0, constant, constant);
-		Assignment a1 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "l"), constant);
-		Assignment a2 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "r"), constant);
-		Return ret = new Return(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"));
+		CFG cfg = new CFG(new CFGDescriptor(unit, false, "simpleLoop"));
+		IMPIntLiteral constant = new IMPIntLiteral(cfg, null, -1, -1, 5);
+		IMPNotEqual condition = new IMPNotEqual(cfg, null, -1, -1, constant, constant);
+		Assignment a1 = new Assignment(cfg, new VariableRef(cfg, "l"), constant);
+		Assignment a2 = new Assignment(cfg, new VariableRef(cfg, "r"), constant);
+		Return ret = new Return(cfg, new VariableRef(cfg, "x"));
 		cfg.addNode(condition, true);
 		cfg.addNode(a1);
 		cfg.addNode(a2);
@@ -248,13 +242,12 @@ public class ConditionalsExtractionTest {
 
 	@Test
 	public void testEmptyLoop() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("fake", 0, 0);
-		CFG cfg = new CFG(new CFGDescriptor(unknownLocation, unit, false, "emptyLoop"));
-		IMPIntLiteral constant = new IMPIntLiteral(cfg, "fake", 0, 0, 5);
-		IMPNotEqual condition = new IMPNotEqual(cfg, "fake", 0, 0, constant, constant);
-		Assignment a1 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "l"), constant);
-		Assignment a2 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "r"), constant);
-		Return ret = new Return(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"));
+		CFG cfg = new CFG(new CFGDescriptor(unit, false, "emptyLoop"));
+		IMPIntLiteral constant = new IMPIntLiteral(cfg, null, -1, -1, 5);
+		IMPNotEqual condition = new IMPNotEqual(cfg, null, -1, -1, constant, constant);
+		Assignment a1 = new Assignment(cfg, new VariableRef(cfg, "l"), constant);
+		Assignment a2 = new Assignment(cfg, new VariableRef(cfg, "r"), constant);
+		Return ret = new Return(cfg, new VariableRef(cfg, "x"));
 		cfg.addNode(condition, true);
 		cfg.addNode(a1);
 		cfg.addNode(a2);
@@ -275,17 +268,16 @@ public class ConditionalsExtractionTest {
 
 	@Test
 	public void testLongLoop() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("fake", 0, 0);
-		CFG cfg = new CFG(new CFGDescriptor(unknownLocation, unit, false, "longLoop"));
-		IMPIntLiteral constant = new IMPIntLiteral(cfg, "fake", 0, 0, 15);
-		IMPNotEqual condition = new IMPNotEqual(cfg, "fake", 0, 0, constant, constant);
-		Assignment a1 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "l"), constant);
-		Assignment a2 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "r"), constant);
-		Assignment a3 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"), constant);
-		Assignment a4 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "y"), constant);
-		Assignment a5 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "z"), constant);
-		Assignment a6 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "w"), constant);
-		Return ret = new Return(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"));
+		CFG cfg = new CFG(new CFGDescriptor(unit, false, "longLoop"));
+		IMPIntLiteral constant = new IMPIntLiteral(cfg, null, -1, -1, 15);
+		IMPNotEqual condition = new IMPNotEqual(cfg, null, -1, -1, constant, constant);
+		Assignment a1 = new Assignment(cfg, new VariableRef(cfg, "l"), constant);
+		Assignment a2 = new Assignment(cfg, new VariableRef(cfg, "r"), constant);
+		Assignment a3 = new Assignment(cfg, new VariableRef(cfg, "x"), constant);
+		Assignment a4 = new Assignment(cfg, new VariableRef(cfg, "y"), constant);
+		Assignment a5 = new Assignment(cfg, new VariableRef(cfg, "z"), constant);
+		Assignment a6 = new Assignment(cfg, new VariableRef(cfg, "w"), constant);
+		Return ret = new Return(cfg, new VariableRef(cfg, "x"));
 		cfg.addNode(condition, true);
 		cfg.addNode(a1);
 		cfg.addNode(a2);
@@ -315,23 +307,17 @@ public class ConditionalsExtractionTest {
 
 	@Test
 	public void testNestedConditionals() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("fake", 0, 0);
-		CFG cfg = new CFG(new CFGDescriptor(unknownLocation, unit, false, "nested"));
-		IMPIntLiteral constant = new IMPIntLiteral(cfg, "fake", 0, 0, 10);
-		IMPIntLiteral constant1 = new IMPIntLiteral(cfg, "fake", 0, 0, 100);
-		IMPNotEqual loop_condition = new IMPNotEqual(cfg, "fake", 0, 0, constant, constant);
-		Assignment loop_a1 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "loop_a1"),
-				constant);
-		Assignment loop_a2 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "loop_a2"),
-				constant);
-		IMPNotEqual if_condition = new IMPNotEqual(cfg, "fake", 0, 0, constant, constant1);
-		Assignment if_a1 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "if_a1"),
-				constant);
-		Assignment if_a2 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "if_a2"),
-				constant);
-		Assignment if_a3 = new Assignment(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "if_a3"),
-				constant);
-		Return ret = new Return(cfg, unknownLocation, new VariableRef(cfg, unknownLocation, "x"));
+		CFG cfg = new CFG(new CFGDescriptor(unit, false, "nested"));
+		IMPIntLiteral constant = new IMPIntLiteral(cfg, null, -1, -1, 10);
+		IMPIntLiteral constant1 = new IMPIntLiteral(cfg, null, -1, -1, 100);
+		IMPNotEqual loop_condition = new IMPNotEqual(cfg, null, -1, -1, constant, constant);
+		Assignment loop_a1 = new Assignment(cfg, new VariableRef(cfg, "loop_a1"), constant);
+		Assignment loop_a2 = new Assignment(cfg, new VariableRef(cfg, "loop_a2"), constant);
+		IMPNotEqual if_condition = new IMPNotEqual(cfg, null, -1, -1, constant, constant1);
+		Assignment if_a1 = new Assignment(cfg, new VariableRef(cfg, "if_a1"), constant);
+		Assignment if_a2 = new Assignment(cfg, new VariableRef(cfg, "if_a2"), constant);
+		Assignment if_a3 = new Assignment(cfg, new VariableRef(cfg, "if_a3"), constant);
+		Return ret = new Return(cfg, new VariableRef(cfg, "x"));
 
 		cfg.addNode(loop_condition, true);
 		cfg.addNode(loop_a1);

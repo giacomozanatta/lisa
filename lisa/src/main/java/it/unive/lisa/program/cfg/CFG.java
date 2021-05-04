@@ -1027,8 +1027,6 @@ public class CFG extends FixpointGraph<CFG, Statement, Edge> implements CodeMemb
 			return Collections.emptyList();
 
 		Statement st = (Statement) pp;
-		if (st instanceof Expression)
-			st = ((Expression) st).getRootStatement();
 		Collection<ControlFlowStructure> res = new LinkedList<>();
 		for (ControlFlowStructure cf : cfStructs)
 			if (cf.contains(st))

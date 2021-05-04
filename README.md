@@ -1,6 +1,4 @@
-<img src="logo.png" alt="logo" width="300"/>
-
----
+# LiSA 
 
 ![GitHub](https://img.shields.io/github/license/UniVE-SSV/lisa?color=brightgreen)
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/UniVE-SSV/lisa/Gradle%20Build/master)
