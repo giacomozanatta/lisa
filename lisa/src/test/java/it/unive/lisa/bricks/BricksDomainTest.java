@@ -4,7 +4,7 @@ import it.unive.lisa.imp.ParsingException;
 import org.junit.Test;
 
 import it.unive.lisa.AnalysisException;
-import it.unive.lisa.LiSA;
+//import it.unive.lisa.LiSA;
 
 
 public class BricksDomainTest {
