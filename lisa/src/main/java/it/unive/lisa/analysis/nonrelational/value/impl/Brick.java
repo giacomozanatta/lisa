@@ -7,21 +7,20 @@ public class Brick {
 	Set<String> strings;
 	int min;
 	int max;
-	
 	public Brick(Set<String> strings, int min, int max) {
 		this.strings = strings;
 		this.min = min;
 		this.max = max;
 	}
-	
+	public Brick() {} // represents empty brick
 	public Set<String> getStrings() {
 		return strings;
 	}
-	
+
 	public int getMin() {
 		return min;
 	}
-	
+
 	public int getMax() {
 		return max;
 	}
@@ -57,4 +56,12 @@ public class Brick {
 		return true;
 	}
 
+
+	public int compareTo(Brick brick2) {
+		if ((brick2.strings.containsAll(strings) && min > brick2.min && max < brick2.max) ||
+				(brick2 instanceof TopBrick) || (this instanceof BottomBrick)) {
+			return -1; // brick1 is smaller
+		}
+		return 1; // brick2 is smaller
+	}
 }

@@ -11,17 +11,18 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
 
     public List<Brick> padList(List<Brick> list1, List<Brick> list2) {
-        boolean list1smaller = list1.size() < list2.size();
-        List<Brick> shorter = list1smaller ? list1 : list2;
-        List<Brick> larger = list1smaller ? list2 : list1;
-        int sizeDiff = Math.abs(larger.size() - shorter.size());
+        // if list2 is smaller than list1 -> return list1
+        if (list2.size() <= list1.size()) {
+            return list1;
+        }
+        int sizeDiff = list2.size() - list1.size();
         List<Brick> paddedList = new ArrayList<Brick>();
         int emptyBricksAdded = 0;
         int j = 0;
 
-        for (int i = 0; i < larger.size() - 1; i++) {
-            if (emptyBricksAdded >= sizeDiff || !(j == shorter.size() || (shorter.get(i) == larger.get(j)))) {
-                paddedList.add(shorter.get(j));
+        for (int i = 0; i < list2.size() - 1; i++) {
+            if (emptyBricksAdded >= sizeDiff || !(j == list1.size() || (list1.get(i) == list2.get(j)))) {
+                paddedList.add(list1.get(j));
                 j++; // remove head
             } else {
                 paddedList.add(new Brick(new TreeSet<String>(), 0,0)); // add empty bricks
@@ -33,6 +34,21 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     }
 
 
+    public int compareLists(List<Brick> list1, List<Brick> list2) {
+        if ((list2.size() == 1 && list2.get(0) instanceof TopBrick) || (list1.size() == 0)) {
+            return 1;
+        }
+        List<Brick> L1 = padList(list1, list2);
+        List<Brick> L2 = padList(list2, list1);
+
+        for (int i = 0; i < L2.size(); i++) {
+            if (L1.get(i).compareTo(L2.get(i)) > 0 ) {
+                // brick i of L1 is bigger than brick i of L2
+                return -1;
+            }
+        }
+        return 1;
+    }
 
 
     @Override
