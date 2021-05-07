@@ -16,7 +16,8 @@ public class Brick {
 		this.min = min;
 		this.max = max;
 	}
-	
+
+	public Brick() {}
 	public Set<String> getStrings() {
 		return strings;
 	}
