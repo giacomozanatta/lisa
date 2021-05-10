@@ -1,6 +1,7 @@
 package it.unive.lisa.analysis.nonrelational.value.impl;
 
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -71,16 +72,8 @@ public class Brick {
 				if (second.getMin() == 1 &&
 						second.getMax() == 1)
 				{
-					// merge bricks
-					Set<String> firstSet = first.getStrings();
-					Set<String> secondSet = second.getStrings();
-					Set<String> newSet = new HashSet<String>();
-					for(String s1 : firstSet) {
-						for(String s2 : secondSet) {
-							newSet.add(s1.concat(s2));
-						}
-					}
-					first.setStrings(newSet);
+
+					first.setStrings(stringSetConcatenation(first.getStrings(), second.getStrings()));
 
 					// remove second brick
 					iter.remove();
@@ -95,7 +88,7 @@ public class Brick {
 			Brick br = iter.next();
 			if(br.getMin() == br.getMax()) {
 				// TODO concatenation of all strings n times
-				this.stringsConcatenation(br.getStrings());
+				this.stringsConcatenation(br.getStrings(), 2);
 				br.setStrings(null);
 			}
 		}
@@ -135,9 +128,35 @@ public class Brick {
 			}
 		}
 	}
-
-	private Set<String> stringsConcatenation(Set<String> strings){
+	
+	private Set<String> stringSetConcatenation(Set<String> firstSet, Set<String> secondSet){
 		Set<String> newSet = new HashSet<String>();
+		for(String s1 : firstSet) {
+			for(String s2 : secondSet) {
+				newSet.add(s1.concat(s2));
+			}
+		}
+		return newSet;
+	}
+
+	private Set<String> stringsConcatenation(Set<String> strings, int nTimes){
+		Set<String> newSet = new TreeSet<String>();
+		for(String s1 : strings) {
+			Set<String> tmpSet1 = new TreeSet<String>();
+			Set<String> tmpSet2 = new TreeSet<String>();
+			tmpSet1.addAll(strings);
+			for(int i = 0; i < nTimes-1; i++) {
+				for(String s2 : tmpSet1) {
+				    // System.out.println(s2);
+					tmpSet2.add(s1.concat(s2));
+				}
+				tmpSet1.clear();
+				tmpSet1.addAll(tmpSet2);
+				tmpSet2.clear();
+			}
+			newSet.addAll(tmpSet1);
+			
+		}
 		return newSet;
 	}
 
