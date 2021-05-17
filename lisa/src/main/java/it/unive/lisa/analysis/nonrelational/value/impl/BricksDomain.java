@@ -9,7 +9,6 @@ import java.util.TreeSet;
 
 public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
-
     public List<Brick> padList(List<Brick> list1, List<Brick> list2) {
         // if list2 is smaller than list1 -> return list1
         if (list2.size() <= list1.size()) {

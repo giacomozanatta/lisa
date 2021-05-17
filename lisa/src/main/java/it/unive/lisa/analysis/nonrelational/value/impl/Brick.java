@@ -3,7 +3,6 @@ package it.unive.lisa.analysis.nonrelational.value.impl;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 public class Brick {
@@ -120,17 +119,18 @@ public class Brick {
 			if(br.getMin()>0 && br.getMax() != br.getMin()) {
 				// creation of the first brick
 				// TODO concatenation of all strings n times
-				Brick newBrick1 = new Brick(null, 1, 1);
+				Brick newBrick1 = new Brick(stringsConcatenation(br.getStrings(), br.getMin()), 1, 1);
 				Brick newBrick2 = new Brick(br.getStrings(), 0, br.getMax() - br.getMin());
 				toBeAdded.add(newBrick1);
 				toBeAdded.add(newBrick2);
 				iter.remove();
 			}
 		}
+		brList.addAll(toBeAdded);
 	}
 	
 	private Set<String> stringSetConcatenation(Set<String> firstSet, Set<String> secondSet){
-		Set<String> newSet = new HashSet<String>();
+		Set<String> newSet = new TreeSet<String>();
 		for(String s1 : firstSet) {
 			for(String s2 : secondSet) {
 				newSet.add(s1.concat(s2));
