@@ -192,10 +192,17 @@ public class Brick {
 	}
 
 	public int compareTo(Brick brick2) {
-		if ((brick2.strings.containsAll(strings) && min > brick2.min && max < brick2.max) ||
+		if ((brick2.strings.containsAll(strings) && min >= brick2.min && max <= brick2.max) ||
 				(brick2 instanceof TopBrick) || (this instanceof BottomBrick)) {
 			return -1; // brick1 is smaller
 		}
 		return 1; // brick2 is smaller
+	}
+
+	// return the lub between two bricks
+	public Brick lub(Brick brick2) {
+		Set<String> union = new TreeSet<>(strings);
+		union.addAll(brick2.strings);
+		return new Brick(union, Math.min(min, brick2.min), Math.min(max, brick2.max));
 	}
 }
