@@ -8,7 +8,12 @@ import it.unive.lisa.symbolic.value.*;
 import java.util.*;
 
 public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
-    protected List<Brick> bricks;
+    
+	protected List<Brick> bricks;
+	protected int kL;
+	protected int kI;
+	protected int kS;
+	
 
     public BricksDomain(List<Brick> bricks) {
         super();
@@ -112,7 +117,21 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
     @Override
     protected BricksDomain wideningAux(BricksDomain other) throws SemanticException {
-        return null;
+        List<Brick> l1 = this.bricks;
+        List<Brick> l2 = other.bricks;
+        if(this.compareLists(l1, l2) == -1 ||
+        		l1.size() > this.kL || 
+        		l2.size() > this.kL)
+        {
+        	return this.top();
+        }
+        if(l1.size()>l2.size()) {
+        	return this.w(l2, l1);
+        }
+        else {
+        	return this.w(l1, l2);
+        }
+        
     }
 
     @Override
@@ -156,5 +175,37 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     @Override
     public String representation() {
         return null;
+    }
+    
+    /*
+     * l2 is the longest list
+     */
+    private BricksDomain w(List<Brick> l1, List<Brick> l2) {
+    	l1 = padList(l1, l2);
+    	List<Brick> newList = new ArrayList<Brick>();
+    	for(int i = 0; i < l1.size(); i++) {
+    		newList.add(bNew(l1.get(i), l2.get(i)));
+    	}
+    	BricksDomain newBrickDomain = new BricksDomain(newList);
+    	return newBrickDomain;
+    }
+    
+    private Brick bNew(Brick b1, Brick b2) {
+    	if(b1 instanceof TopBrick || b2 instanceof TopBrick) {
+    		return new TopBrick();
+    	}
+    	Set<String> tmp = new TreeSet<String>();
+    	tmp.addAll(b1.getStrings());
+    	tmp.addAll(b2.getStrings());
+    	
+    	if( tmp.size() > this.kS ) {
+    		return new TopBrick();
+    	}
+    	int M = Math.max(b1.getMax(), b2.getMax());
+    	int m = Math.min(b1.getMin(), b2.getMin());
+    	if(M-m > this.kI) {
+    		return new Brick(tmp, 0, 100);
+    	}
+    	return new Brick(tmp, m, M);
     }
 }
