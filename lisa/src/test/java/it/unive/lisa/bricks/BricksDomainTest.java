@@ -19,7 +19,7 @@ public class BricksDomainTest {
     public void testBricks() throws ParsingException, AnalysisException {
         new LiSA(
                 new LiSAConfiguration().setDumpAnalysis(true)
-                .setWorkdir("test-outputs/sign-domain")
+                .setWorkdir("test-outputs/bricks")
                 .setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class,
                                 LiSAFactory.getDefaultFor(HeapDomain.class), new BricksDomain(null)))
         ).run(IMPFrontend.processFile("imp-testcases/sign/program.imp"));

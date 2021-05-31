@@ -5,16 +5,26 @@ import java.util.TreeSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
 public class Brick {
 
 	Set<String> strings;
-	int min;
-	int max;
+	Optional<Integer> min;
+	Optional<Integer> max;
 	
 	public Brick(Set<String> strings, int min, int max) {
 		this.strings = strings;
-		this.min = min;
-		this.max = max;
+		this.min = Optional.of(min);
+		this.max = Optional.of(max);
+	}
+	
+	/*
+	 * Specific constructor for max infinity value
+	 */
+	public Brick(Set<String> strings, int min) {
+		this.strings = strings;
+		this.min = Optional.of(min);
+		this.max = Optional.empty();
 	}
 
 	public Brick() {}
@@ -23,11 +33,16 @@ public class Brick {
 	}
 	
 	public int getMin() {
-		return min;
+		return min.get();
 	}
 	
 	public int getMax() {
-		return max;
+		if(max.isPresent()) {
+			return max.get();
+		}
+		else {
+			return Integer.MAX_VALUE;
+		}
 	}
 
 	public void setStrings(Set<String> strings) {
@@ -35,11 +50,11 @@ public class Brick {
 	}
 
 	public void setMin(int min) {
-		this.min = min;
+		this.min = Optional.of(min);
 	}
 
 	public void setMax(int max) {
-		this.max = max;
+		this.max = Optional.of(max);
 	}
 
 	public List<Brick> normalize(List<Brick> brList) {
@@ -164,8 +179,8 @@ public class Brick {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + max;
-		result = prime * result + min;
+		result = prime * result + max.get();
+		result = prime * result + min.get();
 		result = prime * result + ((strings == null) ? 0 : strings.hashCode());
 		return result;
 	}
@@ -192,7 +207,7 @@ public class Brick {
 	}
 
 	public int compareTo(Brick brick2) {
-		if ((brick2.strings.containsAll(strings) && min >= brick2.min && max <= brick2.max) ||
+		if ((brick2.strings.containsAll(strings) && this.getMin() >= brick2.getMin() && getMax() <= brick2.getMax()) ||
 				(brick2 instanceof TopBrick) || (this instanceof BottomBrick)) {
 			return -1; // brick1 is smaller
 		}
@@ -203,6 +218,6 @@ public class Brick {
 	public Brick lub(Brick brick2) {
 		Set<String> union = new TreeSet<>(strings);
 		union.addAll(brick2.strings);
-		return new Brick(union, Math.min(min, brick2.min), Math.min(max, brick2.max));
+		return new Brick(union, Math.min(getMin(), brick2.getMin()), Math.min(getMax(), brick2.getMax()));
 	}
 }

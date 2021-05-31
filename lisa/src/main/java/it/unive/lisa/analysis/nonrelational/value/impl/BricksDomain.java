@@ -1,6 +1,7 @@
 package it.unive.lisa.analysis.nonrelational.value.impl;
 
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.*;
@@ -19,6 +20,15 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
         super();
         this.bricks = bricks;
     }
+    
+    public List<Brick> getBricks() {
+		return bricks;
+	}
+
+
+	public void setBricks(List<Brick> bricks) {
+		this.bricks = bricks;
+	}
 
 
     @Override
@@ -55,6 +65,12 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     @Override
     protected BricksDomain evalBinaryExpression(BinaryOperator operator, BricksDomain left, BricksDomain right, ProgramPoint pp) {
         // STRING_CONCAT --- STRING_EQUALS (?)
+    	switch (operator) {
+		case STRING_CONCAT:
+			return stringConcatAux(left, right);			
+		default:
+			break;
+		}
         return super.evalBinaryExpression(operator, left, right, pp);
     }
 
@@ -86,7 +102,25 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
         return paddedList;
     }
-
+    
+    @Override
+    protected Satisfiability satisfiesBinaryExpression(BinaryOperator operator, BricksDomain left, BricksDomain right,
+			ProgramPoint pp) {
+    	
+    	switch(operator){
+    	case STRING_CONTAINS:
+    		return stringContainsAux(left, right);
+    	case STRING_ENDS_WITH:
+    		return stringEndsAux(left, right);
+    	case STRING_EQUALS:
+    		return stringEqualsAux(left, right);
+    	case STRING_STARTS_WITH:
+    		return stringStartsAux(left, right);
+    	default:
+    		break;
+    	}
+		return Satisfiability.UNKNOWN;
+	}
 
     public int compareLists(List<Brick> list1, List<Brick> list2) {
         if ((list2.size() == 1 && list2.get(0) instanceof TopBrick) || (list1.size() == 0)) {
@@ -102,7 +136,6 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
         }
         return 1;
     }
-
 
     @Override
     protected BricksDomain lubAux(BricksDomain other) throws SemanticException {
@@ -120,6 +153,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
         List<Brick> l1 = this.bricks;
         List<Brick> l2 = other.bricks;
         if(this.compareLists(l1, l2) == -1 ||
+        		this.compareLists(l2, l1) == -1 ||
         		l1.size() > this.kL || 
         		l2.size() > this.kL)
         {
@@ -204,8 +238,113 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     	int M = Math.max(b1.getMax(), b2.getMax());
     	int m = Math.min(b1.getMin(), b2.getMin());
     	if(M-m > this.kI) {
-    		return new Brick(tmp, 0, 100);
+    		return new Brick(tmp, 0);
     	}
     	return new Brick(tmp, m, M);
     }
+    
+    /*
+     * Creates a new BricksDomain containing the concatenation of left and right
+     */
+    private BricksDomain stringConcatAux(BricksDomain left, BricksDomain right) {
+    	List<Brick> l1 = left.getBricks();
+    	List<Brick> l2 = right.getBricks();
+    	List<Brick> concat = new ArrayList<Brick>();
+    	concat.addAll(l1);
+    	concat.addAll(l2);
+    	return new BricksDomain(concat);
+    }
+    
+    /*
+     * left contains right?
+     * Here we use two boolean flags to keep track of whether l1 contains or not contains all elements of l2 
+     */
+    private Satisfiability stringContainsAux(BricksDomain left, BricksDomain right) {
+    	List<Brick> l1 = left.getBricks();
+    	List<Brick> l2 = left.getBricks();
+    	boolean contains = false;
+    	boolean notContains = false;
+    	for( Brick brick : l2) {
+    		if(l1.contains(brick)) {
+    			contains = true;
+    		}else {
+    			notContains = true;
+    		}
+    	}
+    	// XOR operation
+    	if (!contains ^ notContains) {
+    		return Satisfiability.BOTTOM;
+    	}
+    	else {
+    		if(contains) {
+    			return Satisfiability.SATISFIED;
+    		}
+    		else {
+    			return Satisfiability.NOT_SATISFIED;
+    		}
+    	}
+    }
+    
+    
+    /*
+     * left ends with right?
+     * We assume that l2 is shorter than l1
+     */ 
+    private Satisfiability stringEndsAux(BricksDomain left, BricksDomain right) {
+    	List<Brick> l1 = left.getBricks();
+    	List<Brick> l2 = left.getBricks();
+    	boolean ends = true;
+    	if(l2.size()<=l1.size()) {    		
+    		int j = l1.size()-1;
+    		for(int i = l2.size()-1; i>0; i--) {
+    			if(! l1.get(j).equals(l2.get(i))) {
+    				ends = false;
+    			}
+    			j--;
+    		}
+    		return ends? Satisfiability.SATISFIED : Satisfiability.NOT_SATISFIED;
+    	}
+    	else {
+    		return Satisfiability.NOT_SATISFIED;
+    	}
+    }
+    
+    /*
+     * left equals right?
+     * Here we compare if every brick is equal respecting their order;
+     */
+    private Satisfiability stringEqualsAux(BricksDomain left, BricksDomain right) {
+    	List<Brick> l1 = left.getBricks();
+    	List<Brick> l2 = left.getBricks();
+    	ListIterator<Brick> iter1 = l1.listIterator();
+    	ListIterator<Brick> iter2 = l2.listIterator();
+    	boolean flag = true;
+    	while(iter1.hasNext() || iter2.hasNext()) {
+    		if(! iter1.next().equals(iter2.next())) {
+    			flag=false;
+    		}
+    	}
+    	return flag?Satisfiability.SATISFIED : Satisfiability.NOT_SATISFIED;
+    }
+    
+    /*
+     * left starts with right?
+     * We assume that l2 is shorter than l1
+     */ 
+    private Satisfiability stringStartsAux(BricksDomain left, BricksDomain right) {
+    	List<Brick> l1 = left.getBricks();
+    	List<Brick> l2 = left.getBricks();
+    	boolean starts = true;
+    	if(l2.size()<=l1.size()) {
+    		for(int i = 0; i < l2.size(); i++) {
+    			if(! l1.get(i).equals(l2.get(i))) {
+    				starts = false;
+    			}
+    		}
+    		return starts?Satisfiability.SATISFIED : Satisfiability.NOT_SATISFIED;
+    	}else {
+    		return Satisfiability.NOT_SATISFIED;
+    	}
+    }
+    
 }
