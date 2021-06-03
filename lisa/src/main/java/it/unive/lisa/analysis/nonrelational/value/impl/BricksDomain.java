@@ -20,7 +20,10 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
         super();
         this.bricks = bricks;
     }
-    
+    public BricksDomain() {
+        super();
+        this.bricks = new ArrayList<Brick>();
+    }
     public List<Brick> getBricks() {
 		return bricks;
 	}
@@ -77,6 +80,14 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     @Override
     protected BricksDomain evalTernaryExpression(TernaryOperator operator, BricksDomain left, BricksDomain middle, BricksDomain right, ProgramPoint pp) {
         // STRING_REPLACE --- STRING_SUBSTRING
+        switch (operator) {
+            case STRING_REPLACE:
+                return stringReplace(left, middle, right);
+            case STRING_SUBSTRING:
+
+            default:
+                break;
+        }
         return super.evalTernaryExpression(operator, left, middle, right, pp);
     }
 
@@ -122,6 +133,10 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 		return Satisfiability.UNKNOWN;
 	}
 
+    @Override
+    protected Satisfiability satisfiesTernaryExpression(TernaryOperator operator, BricksDomain left, BricksDomain middle, BricksDomain right, ProgramPoint pp) {
+        return super.satisfiesTernaryExpression(operator, left, middle, right, pp);
+    }
     public int compareLists(List<Brick> list1, List<Brick> list2) {
         if ((list2.size() == 1 && list2.get(0) instanceof TopBrick) || (list1.size() == 0)) {
             return 1;
@@ -346,5 +361,42 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     		return Satisfiability.NOT_SATISFIED;
     	}
     }
-    
+
+    private BricksDomain stringReplace(BricksDomain input, BricksDomain search, BricksDomain replace) {
+        List<Brick> l1 = input.getBricks();
+        List<Brick> l2 = search.getBricks();
+        l1 = padList(l1, l2);
+        l2 = padList(l1,l2);
+        int i = 0;
+        while(i < l1.size()) {
+            int j = 0;
+            int oldI = i;
+            while ( j < l2.size()) {
+                if (l1.get(i).equals(l2.get(j))) {
+                    j++;
+                    i++;
+                } else {
+                    break;
+                }
+            }
+            i = oldI;
+            if (j == l2.size()) {
+                // we find a pattern.
+                int l = 0;
+                for (int k=i-j; k<j; k++) {
+                    l1.set(k, replace.getBricks().get(l));
+                    l++;
+                }
+            }
+        }
+        return new BricksDomain(l1);
+    }
+
+    private BricksDomain stringSubStr(BricksDomain input, int i, int j) {
+        if (input.getBricks().size() < j || i < 0) {
+            return new BricksDomain();
+        }
+
+        return new BricksDomain(input.getBricks().subList(i,j));
+    }
 }
