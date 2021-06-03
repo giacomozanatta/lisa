@@ -27,7 +27,11 @@ public class Brick {
 		this.max = Optional.empty();
 	}
 
-	public Brick() {}
+	public Brick() {
+		this.strings = new TreeSet<>();
+		this.min = Optional.of(0);
+		this.max = Optional.of(0);
+	}
 	public Set<String> getStrings() {
 		return strings;
 	}

@@ -22,7 +22,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     }
     public BricksDomain() {
         super();
-        this.bricks = new ArrayList<Brick>();
+        this.bricks = new ArrayList<>();
     }
     public List<Brick> getBricks() {
 		return bricks;
@@ -84,7 +84,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
             case STRING_REPLACE:
                 return stringReplace(left, middle, right);
             case STRING_SUBSTRING:
-
+                return stringSubStr(left, 0, 1);
             default:
                 break;
         }
@@ -276,7 +276,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
      */
     private Satisfiability stringContainsAux(BricksDomain left, BricksDomain right) {
     	List<Brick> l1 = left.getBricks();
-    	List<Brick> l2 = left.getBricks();
+    	List<Brick> l2 = right.getBricks();
     	boolean contains = false;
     	boolean notContains = false;
     	for( Brick brick : l2) {
@@ -288,7 +288,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     	}
     	// XOR operation
     	if (!contains ^ notContains) {
-    		return Satisfiability.BOTTOM;
+    		return Satisfiability.UNKNOWN;
     	}
     	else {
     		if(contains) {
@@ -307,7 +307,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
      */ 
     private Satisfiability stringEndsAux(BricksDomain left, BricksDomain right) {
     	List<Brick> l1 = left.getBricks();
-    	List<Brick> l2 = left.getBricks();
+    	List<Brick> l2 = right.getBricks();
     	boolean ends = true;
     	if(l2.size()<=l1.size()) {    		
     		int j = l1.size()-1;
@@ -330,7 +330,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
      */
     private Satisfiability stringEqualsAux(BricksDomain left, BricksDomain right) {
     	List<Brick> l1 = left.getBricks();
-    	List<Brick> l2 = left.getBricks();
+    	List<Brick> l2 = right.getBricks();
     	ListIterator<Brick> iter1 = l1.listIterator();
     	ListIterator<Brick> iter2 = l2.listIterator();
     	boolean flag = true;
@@ -348,7 +348,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
      */ 
     private Satisfiability stringStartsAux(BricksDomain left, BricksDomain right) {
     	List<Brick> l1 = left.getBricks();
-    	List<Brick> l2 = left.getBricks();
+    	List<Brick> l2 = right.getBricks();
     	boolean starts = true;
     	if(l2.size()<=l1.size()) {
     		for(int i = 0; i < l2.size(); i++) {
