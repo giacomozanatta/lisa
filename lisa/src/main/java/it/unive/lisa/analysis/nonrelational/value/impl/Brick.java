@@ -8,6 +8,7 @@ import java.util.ListIterator;
 import java.util.Optional;
 public class Brick {
 
+
 	Set<String> strings;
 	Optional<Integer> min;
 	Optional<Integer> max;
@@ -32,6 +33,12 @@ public class Brick {
 		this.min = Optional.of(0);
 		this.max = Optional.of(0);
 	}
+	
+	@Override
+	public String toString() {
+		return "Brick [strings=" + strings + ", min=" + min + ", max=" + max + "]";
+	}
+	
 	public Set<String> getStrings() {
 		return strings;
 	}

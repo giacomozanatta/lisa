@@ -223,7 +223,12 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
     @Override
     public String representation() {
-        return null;
+    	/*
+        String tmp = "";
+        for( Brick br : this.bricks) {
+        	tmp.concat(br.toString());
+        }*/
+        return bricks.toString();
     }
     
     /*

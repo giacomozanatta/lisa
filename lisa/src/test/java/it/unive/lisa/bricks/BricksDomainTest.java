@@ -22,6 +22,6 @@ public class BricksDomainTest {
                 .setWorkdir("test-outputs/bricks")
                 .setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class,
                                 LiSAFactory.getDefaultFor(HeapDomain.class), new BricksDomain(null)))
-        ).run(IMPFrontend.processFile("imp-testcases/sign/program.imp"));
+        ).run(IMPFrontend.processFile("imp-testcases/Bricks/test.imp"));
     }
 }
