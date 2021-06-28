@@ -1,0 +1,32 @@
+class tutorial {
+
+	concat() {
+		def str1 = "Hello";
+		def str2 = " world";
+		def hw = strcat(str1, str2);
+		
+		return hw;
+    }
+    /*
+    equals() {
+    	def str1 = "Hello";
+    	def str2 = "World";
+    	if (streq(str1, str2)){
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+    */
+    
+    replace() {
+    	def str1 = "Hello world";
+    	def str2 = "world";
+    	def str3 = "boy";
+    	def str4 = strrep(str1, str2, str3);
+    	
+    	return str4;
+    }
+    	
+}
