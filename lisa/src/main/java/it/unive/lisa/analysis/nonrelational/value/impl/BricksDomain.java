@@ -1,7 +1,7 @@
 package it.unive.lisa.analysis.nonrelational.value.impl;
 
-import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
+import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.*;
@@ -14,16 +14,23 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 	protected int kL;
 	protected int kI;
 	protected int kS;
-	
+    private Object data;
 
     public BricksDomain(List<Brick> bricks) {
         super();
-        this.bricks = bricks;
+        this.bricks = Brick.normalize(bricks);
     }
+
+    public BricksDomain(Object data) {
+        this();
+        this.data = data;
+    }
+
     public BricksDomain() {
         super();
         this.bricks = new ArrayList<>();
     }
+
     public List<Brick> getBricks() {
 		return bricks;
 	}
@@ -33,6 +40,9 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 		this.bricks = bricks;
 	}
 
+    public Object getData() {
+        return data;
+    }
 
     @Override
     protected BricksDomain evalTypeConv(BinaryExpression conv, BricksDomain left, BricksDomain right) {
@@ -56,7 +66,8 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
             bricks.add(new Brick(Collections.singleton((String) constant.getValue()), 1,1));
             return new BricksDomain(bricks);
         }
-        return super.evalNonNullConstant(constant, pp);
+        return new BricksDomain(constant.getValue());
+        //return super.evalNonNullConstant(constant, pp);
     }
 
     @Override
@@ -84,7 +95,10 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
             case STRING_REPLACE:
                 return stringReplace(left, middle, right);
             case STRING_SUBSTRING:
-                return stringSubStr(left, 0, 1);
+                // get from program point the value of startPos and endPos
+                int startPos = (Integer) left.getData();
+                int endPos = (Integer) right.getData();
+                return stringSubStr(left, startPos, endPos);
             default:
                 break;
         }
@@ -364,39 +378,43 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
     private BricksDomain stringReplace(BricksDomain input, BricksDomain search, BricksDomain replace) {
         List<Brick> l1 = input.getBricks();
-        List<Brick> l2 = search.getBricks();
-        l1 = padList(l1, l2);
-        l2 = padList(l1,l2);
-        int i = 0;
-        while(i < l1.size()) {
-            int j = 0;
-            int oldI = i;
-            while ( j < l2.size()) {
-                if (l1.get(i).equals(l2.get(j))) {
-                    j++;
-                    i++;
+        ArrayList<Brick> l2 = (ArrayList<Brick>) search.getBricks();
+        List<Brick> output = new ArrayList<Brick>();
+        for (int i = 0; i < l1.size(); i++) {
+            if (l1.get(i) != l2.get(0)) {
+                // if is different, add the i-th element of l1 to the output list.
+                output.add(l1.get(i));
+            } else {
+                // they are the same. Check if it we need to replace.
+                if (isPrefix(l1.subList(i, l1.size()), l2)) {
+                    output.addAll(replace.getBricks());
+                    i += l2.size();
                 } else {
-                    break;
-                }
-            }
-            i = oldI;
-            if (j == l2.size()) {
-                // we find a pattern.
-                int l = 0;
-                for (int k=i-j; k<j; k++) {
-                    l1.set(k, replace.getBricks().get(l));
-                    l++;
+                    // is not the prefix. Just skip.
+                    output.add(l1.get(i));
                 }
             }
         }
-        return new BricksDomain(l1);
+        return new BricksDomain(output);
+    }
+
+    private boolean isPrefix(List<Brick> l1, List<Brick> l2) {
+        if (l1.size() != l2.size()) {
+            return false;
+        } else {
+            for (int i = 0; i < l1.size(); i++) {
+                if (l1.get(i) != l2.get(i)) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     private BricksDomain stringSubStr(BricksDomain input, int i, int j) {
         if (input.getBricks().size() < j || i < 0) {
             return new BricksDomain();
         }
-
         return new BricksDomain(input.getBricks().subList(i,j));
     }
 }

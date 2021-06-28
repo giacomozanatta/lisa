@@ -61,23 +61,23 @@ public class Brick {
 		this.max = Optional.of(max);
 	}
 
-	public List<Brick> normalize(List<Brick> brList) {
-		this.rule1(brList);
-		this.rule2(brList);
-		this.rule3(brList);
-		this.rule4(brList);
-		this.rule5(brList);
+	public static List<Brick> normalize(List<Brick> brList) {
+		rule1(brList);
+		rule2(brList);
+		rule3(brList);
+		rule4(brList);
+		rule5(brList);
 		return brList;
 	}
 
 
-	private void rule1(List<Brick> brList) {
+	private static void rule1(List<Brick> brList) {
 		brList.removeIf(br -> br.getStrings().isEmpty() &&
 				br.getMax() == 0 &&
 				br.getMin() == 0);
 	}
 
-	private void rule2(List<Brick> brList) {
+	private static void rule2(List<Brick> brList) {
 		ListIterator<Brick> iter = brList.listIterator();
 		while( iter.hasNext()) {
 			Brick first = iter.next();
@@ -100,19 +100,19 @@ public class Brick {
 		}
 	}
 
-	private void rule3(List<Brick> brList) {
+	private static void rule3(List<Brick> brList) {
 		ListIterator<Brick> iter = brList.listIterator();
 		while (iter.hasNext()) {
 			Brick br = iter.next();
 			if(br.getMin() == br.getMax()) {
 				// TODO concatenation of all strings n times
-				this.stringsConcatenation(br.getStrings(), 2);
+				stringsConcatenation(br.getStrings(), 2);
 				br.setStrings(null);
 			}
 		}
 	}
 
-	private void rule4(List<Brick> brList) {
+	private static void rule4(List<Brick> brList) {
 		ListIterator<Brick> iter = brList.listIterator();
 		while( iter.hasNext()) {
 			Brick first = iter.next();
@@ -130,7 +130,7 @@ public class Brick {
 		}
 	}
 
-	private void rule5(List<Brick> brList) {
+	private static void rule5(List<Brick> brList) {
 		ListIterator<Brick> iter = brList.listIterator();
 		List<Brick> toBeAdded = new ArrayList<Brick>();
 		while (iter.hasNext()) {
@@ -148,7 +148,7 @@ public class Brick {
 		brList.addAll(toBeAdded);
 	}
 	
-	private Set<String> stringSetConcatenation(Set<String> firstSet, Set<String> secondSet){
+	private static Set<String> stringSetConcatenation(Set<String> firstSet, Set<String> secondSet){
 		Set<String> newSet = new TreeSet<String>();
 		for(String s1 : firstSet) {
 			for(String s2 : secondSet) {
@@ -158,7 +158,7 @@ public class Brick {
 		return newSet;
 	}
 
-	private Set<String> stringsConcatenation(Set<String> strings, int nTimes){
+	private static Set<String> stringsConcatenation(Set<String> strings, int nTimes){
 		Set<String> newSet = new TreeSet<String>();
 		for(String s1 : strings) {
 			Set<String> tmpSet1 = new TreeSet<String>();
