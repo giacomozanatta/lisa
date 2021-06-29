@@ -18,8 +18,8 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
     public BricksDomain(List<Brick> bricks) {
         super();
-        this.bricks = bricks;
-        //this.bricks = Brick.normalize(bricks);
+        //this.bricks = bricks;
+        this.bricks = Brick.normalize(bricks);
     }
 
     public BricksDomain(Object data) {
@@ -35,7 +35,6 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     public List<Brick> getBricks() {
 		return bricks;
 	}
-
 
 	public void setBricks(List<Brick> bricks) {
 		this.bricks = bricks;
@@ -157,6 +156,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     protected Satisfiability satisfiesTernaryExpression(TernaryOperator operator, BricksDomain left, BricksDomain middle, BricksDomain right, ProgramPoint pp) {
         return super.satisfiesTernaryExpression(operator, left, middle, right, pp);
     }
+    
     public int compareLists(List<Brick> list1, List<Brick> list2) {
         if ((list2.size() == 1 && list2.get(0) instanceof TopBrick) || (list1.size() == 0)) {
             return 1;
@@ -240,7 +240,9 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
     @Override
     public BricksDomain bottom() {
-        return new BricksDomain(new ArrayList<>());
+    	List<Brick> bottom = new ArrayList<>();
+    	bottom.add(new BottomBrick());
+        return new BricksDomain(bottom);
     }
 
     @Override
