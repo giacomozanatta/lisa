@@ -1,12 +1,5 @@
-class tutorial {
-	concat() {
-		def str1 = "Hello";
-		def str2 = " world";
-		def hw = strcat(str1, str2);
-		
-		return hw;
-    }    
-    
+class tutorial { 
+   
     example() {
         def x = "a";
         def j = 0;
@@ -16,8 +9,16 @@ class tutorial {
         }
         return x;
     }
-    /*
     
+    /*
+	concat() {
+		def str1 = "Hello";
+		def str2 = " world";
+		def hw = strcat(str1, str2);
+		
+		return hw;
+    }    
+        
     equals() {
     	def str1 = "Hello";
     	def str2 = "World";
@@ -38,6 +39,5 @@ class tutorial {
     	
     	return str4;
     }
-    */
-    	
+    */   	
 }

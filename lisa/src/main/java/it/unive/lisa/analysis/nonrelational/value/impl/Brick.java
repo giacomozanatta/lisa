@@ -36,7 +36,7 @@ public class Brick {
 	
 	@Override
 	public String toString() {
-		return "Brick [strings=" + strings + ", min=" + min + ", max=" + max + "]";
+		return strings + ", min=" + getMin() + ", max=" + getMax();
 	}
 	
 	public Set<String> getStrings() {
@@ -90,7 +90,7 @@ public class Brick {
 		ListIterator<Brick> iter = brList.listIterator();
 		while( iter.hasNext()) {
 			
-			System.out.println("Loop 2");
+			//System.out.println("Loop 2");
 			Brick first = iter.next();
 
 			if( first.getMin() == 1 &&
@@ -114,7 +114,7 @@ public class Brick {
 	private static void rule3(List<Brick> brList) {
 		ListIterator<Brick> iter = brList.listIterator();
 		while (iter.hasNext()) {
-			System.out.println("Loop 3");
+			//System.out.println("Loop 3");
 			Brick br = iter.next();
 			if(br.getMin() == br.getMax() && br.getMin()!=1) {
 				// TODO concatenation of all strings n times
@@ -126,7 +126,7 @@ public class Brick {
 	private static void rule4(List<Brick> brList) {
 		ListIterator<Brick> iter = brList.listIterator();
 		while( iter.hasNext()) {
-			System.out.println("Loop 4");
+			//System.out.println("Loop 4");
 			Brick first = iter.next();
 
 			if( iter.hasNext()){
@@ -149,7 +149,7 @@ public class Brick {
 		ListIterator<Brick> iter = brList.listIterator();
 		List<Brick> toBeAdded = new ArrayList<Brick>();
 		while (iter.hasNext()) {
-			System.out.println("Loop 5");
+			//System.out.println("Loop 5");
 			Brick br = iter.next();
 			if(br.getMin()>0 && br.getMax() != br.getMin()) {
 				// creation of the first brick
@@ -239,11 +239,21 @@ public class Brick {
 		}
 		return 1; // brick2 is smaller
 	}
+	
+	public boolean padCompare(Brick brick2) {
+		if( this.getMin() == brick2.getMin() &&
+			this.getMax() == brick2.getMax() &&
+			//this.strings.size() == brick2.strings.size() &&
+			this.strings.equals(brick2.strings) )
+			return true;
+		else
+			return false;
+	}
 
 	// return the lub between two bricks
 	public Brick lub(Brick brick2) {
 		Set<String> union = new TreeSet<>(strings);
 		union.addAll(brick2.strings);
-		return new Brick(union, Math.min(getMin(), brick2.getMin()), Math.min(getMax(), brick2.getMax()));
+		return new Brick(union, Math.min(getMin(), brick2.getMin()), Math.max(getMax(), brick2.getMax()));
 	}
 }

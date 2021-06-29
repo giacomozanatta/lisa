@@ -18,8 +18,8 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
     public BricksDomain(List<Brick> bricks) {
         super();
-        //this.bricks = bricks;
-        this.bricks = Brick.normalize(bricks);
+        this.bricks = bricks;
+        //this.bricks = Brick.normalize(bricks);
     }
 
     public BricksDomain(Object data) {
@@ -125,7 +125,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
             if (emptyBricksAdded >= sizeDiff) {
                 paddedList.add(list1.get(j));
                 j++; // remove head
-            } else if ( j == list1.size() || (list1.get(j) == list2.get(i)) ) {
+            } else if ( j == list1.size() || !(list1.get(j).padCompare(list2.get(i)) ) ) {
             	paddedList.add(new Brick(new TreeSet<>(), 0,0)); // add empty bricks
                 emptyBricksAdded++;
             }            
@@ -176,12 +176,13 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
        for (int i = 0; i < L1.size(); i++) {
            lubElement.add(L1.get(i).lub(L2.get(i)));
        }
-        System.out.println("L1: " +  L1);
-        System.out.println("L2: " + L2);
+       System.out.println("L1: " +  L1);
+       System.out.println("L2: " + L2);
        System.out.println("LUB: " + lubElement);
-        System.out.println("\n");
-
-       return new BricksDomain(lubElement);
+       List<Brick> normalizedLubElement = Brick.normalize(lubElement);
+       System.out.println("Normalized LUB: " + normalizedLubElement);
+       System.out.println("\n");
+       return new BricksDomain(normalizedLubElement);
     }
 
     @Override
@@ -254,11 +255,6 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
     @Override
     public String representation() {
-    	/*
-        String tmp = "";
-        for( Brick br : this.bricks) {
-        	tmp.concat(br.toString());
-        }*/
         return bricks.toString();
     }
     
