@@ -113,8 +113,7 @@ public class Brick {
 			Brick br = iter.next();
 			if(br.getMin() == br.getMax()) {
 				// TODO concatenation of all strings n times
-				stringsConcatenation(br.getStrings(), 2);
-				br.setStrings(null);
+				br.setStrings(stringsConcatenation(br.getStrings(), br.getMax()));
 			}
 		}
 	}
@@ -194,6 +193,12 @@ public class Brick {
 		result = prime * result + min.get();
 		result = prime * result + ((strings == null) ? 0 : strings.hashCode());
 		return result;
+	}
+
+	public Brick clone() {
+		Set<String> strings = new TreeSet<String>();
+		strings.addAll(this.strings);
+		return new Brick(strings, this.getMin(), this.getMax());
 	}
 
 	@Override

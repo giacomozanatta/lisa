@@ -11,9 +11,9 @@ import java.util.*;
 public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     
 	protected List<Brick> bricks;
-	protected int kL;
-	protected int kI;
-	protected int kS;
+	protected int kL = 10;
+	protected int kI = 10;
+	protected int kS = 10;
     private Object data;
 
     public BricksDomain(List<Brick> bricks) {
@@ -63,7 +63,8 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     protected BricksDomain evalNonNullConstant(Constant constant, ProgramPoint pp) {
         if (constant.getValue() instanceof String) {
             List<Brick> bricks = new ArrayList<>();
-            bricks.add(new Brick(Collections.singleton((String) constant.getValue()), 1,1));
+            String valString = constant.getValue().toString();
+            bricks.add(new Brick(Collections.singleton(valString.substring(1, valString.length()-1)), 1,1));
             return new BricksDomain(bricks);
         }
         return new BricksDomain(constant.getValue());
@@ -284,8 +285,8 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     	List<Brick> l1 = left.getBricks();
     	List<Brick> l2 = right.getBricks();
     	List<Brick> concat = new ArrayList<Brick>();
-    	concat.addAll(l1);
-    	concat.addAll(l2);
+    	concat.addAll(cloneOf(l1));
+    	concat.addAll(cloneOf(l2));
     	return new BricksDomain(concat);
     }
     
@@ -392,7 +393,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
             } else {
                 // they are the same. Check if it we need to replace.
                 if (isPrefix(l1.subList(i, l1.size()), l2)) {
-                    output.addAll(replace.getBricks());
+                    output.addAll(cloneOf(replace.getBricks()));
                     i += l2.size();
                 } else {
                     // is not the prefix. Just skip.
@@ -421,5 +422,13 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
             return new BricksDomain();
         }
         return new BricksDomain(input.getBricks().subList(i,j));
+    }
+
+    public static List<Brick> cloneOf(List<Brick> bricks) {
+        List<Brick> cloned = new ArrayList<>();
+        for (Brick b : bricks) {
+            cloned.add(b.clone());
+        }
+        return cloned;
     }
 }
