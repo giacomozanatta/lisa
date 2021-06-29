@@ -87,6 +87,8 @@ public class Brick {
 	private static void rule2(List<Brick> brList) {
 		ListIterator<Brick> iter = brList.listIterator();
 		while( iter.hasNext()) {
+			
+			System.out.println("Loop 2");
 			Brick first = iter.next();
 
 			if( first.getMin() == 1 &&
@@ -110,8 +112,9 @@ public class Brick {
 	private static void rule3(List<Brick> brList) {
 		ListIterator<Brick> iter = brList.listIterator();
 		while (iter.hasNext()) {
+			System.out.println("Loop 3");
 			Brick br = iter.next();
-			if(br.getMin() == br.getMax()) {
+			if(br.getMin() == br.getMax() && br.getMin()!=1) {
 				// TODO concatenation of all strings n times
 				br.setStrings(stringsConcatenation(br.getStrings(), br.getMax()));
 			}
@@ -121,6 +124,7 @@ public class Brick {
 	private static void rule4(List<Brick> brList) {
 		ListIterator<Brick> iter = brList.listIterator();
 		while( iter.hasNext()) {
+			System.out.println("Loop 4");
 			Brick first = iter.next();
 
 			if( iter.hasNext()){
@@ -132,6 +136,9 @@ public class Brick {
 					// remove second brick
 					iter.remove();
 				}
+				else {
+					iter.previous();
+				}
 			}
 		}
 	}
@@ -140,6 +147,7 @@ public class Brick {
 		ListIterator<Brick> iter = brList.listIterator();
 		List<Brick> toBeAdded = new ArrayList<Brick>();
 		while (iter.hasNext()) {
+			System.out.println("Loop 5");
 			Brick br = iter.next();
 			if(br.getMin()>0 && br.getMax() != br.getMin()) {
 				// creation of the first brick

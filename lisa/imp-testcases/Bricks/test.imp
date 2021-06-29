@@ -1,13 +1,23 @@
 class tutorial {
-
 	concat() {
 		def str1 = "Hello";
 		def str2 = " world";
 		def hw = strcat(str1, str2);
 		
 		return hw;
+    }    
+    
+    example() {
+        def x = "a";
+        def j = 0;
+        while(j < 10) {
+            x = strcat(strcat("0", x), "1");
+            j = j + 1;
+        }
+        return x;
     }
     /*
+    
     equals() {
     	def str1 = "Hello";
     	def str2 = "World";
@@ -18,7 +28,7 @@ class tutorial {
     		return false;
     	}
     }
-    */
+    
     
     replace() {
     	def str1 = "Hello world";
@@ -28,5 +38,6 @@ class tutorial {
     	
     	return str4;
     }
+    */
     	
 }

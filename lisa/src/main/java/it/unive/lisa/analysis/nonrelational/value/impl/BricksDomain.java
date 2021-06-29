@@ -11,14 +11,15 @@ import java.util.*;
 public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     
 	protected List<Brick> bricks;
-	protected int kL = 10;
-	protected int kI = 10;
-	protected int kS = 10;
+	protected int kL = 3;
+	protected int kI = 3;
+	protected int kS = 3;
     private Object data;
 
     public BricksDomain(List<Brick> bricks) {
         super();
-        this.bricks = Brick.normalize(bricks);
+        this.bricks = bricks;
+        //this.bricks = Brick.normalize(bricks);
     }
 
     public BricksDomain(Object data) {
@@ -67,8 +68,8 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
             bricks.add(new Brick(Collections.singleton(valString.substring(1, valString.length()-1)), 1,1));
             return new BricksDomain(bricks);
         }
-        return new BricksDomain(constant.getValue());
-        //return super.evalNonNullConstant(constant, pp);
+        //return new BricksDomain(constant.getValue());
+        return super.evalNonNullConstant(constant, pp);
     }
 
     @Override
@@ -116,13 +117,17 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
         int emptyBricksAdded = 0;
         int j = 0;
 
-        for (int i = 0; i < list2.size() - 1; i++) {
-            if (emptyBricksAdded >= sizeDiff || !(j == list1.size() || (list1.get(i) == list2.get(j)))) {
+        for (int i = 0; i < list2.size(); i++) {
+            if (emptyBricksAdded >= sizeDiff) {
                 paddedList.add(list1.get(j));
                 j++; // remove head
-            } else {
-                paddedList.add(new Brick(new TreeSet<>(), 0,0)); // add empty bricks
+            } else if ( j == list1.size() || (list1.get(j) == list2.get(i)) ) {
+            	paddedList.add(new Brick(new TreeSet<>(), 0,0)); // add empty bricks
                 emptyBricksAdded++;
+            }            
+            else {                
+                paddedList.add(list1.get(j));
+                j++;
             }
         }
 
@@ -172,6 +177,8 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
        List<Brick> L1 = padList(bricks, other.bricks);
        List<Brick> L2 = padList(other.bricks, bricks);
        List<Brick> lubElement = new ArrayList<>();
+       if(L1.size()!=L2.size())
+    	   System.out.println("Diversa lunghezza");
        for (int i = 0; i < L1.size(); i++) {
            lubElement.add(L1.get(i).lub(L2.get(i)));
        }
@@ -182,8 +189,8 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     protected BricksDomain wideningAux(BricksDomain other) throws SemanticException {
         List<Brick> l1 = this.bricks;
         List<Brick> l2 = other.bricks;
-        if(this.compareLists(l1, l2) == -1 ||
-        		this.compareLists(l2, l1) == -1 ||
+        if( (!this.lessOrEqual(other) &&
+        	!other.lessOrEqual(this)) ||
         		l1.size() > this.kL || 
         		l2.size() > this.kL)
         {
@@ -201,7 +208,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     @Override
     protected boolean lessOrEqualAux(BricksDomain other) throws SemanticException {
         if ((other.bricks.size() == 1 && other.bricks.get(0) instanceof TopBrick) || (bricks.size() == 0)) {
-            return false;
+            return true;
         }
         List<Brick> L1 = padList(bricks, other.bricks);
         List<Brick> L2 = padList(other.bricks, bricks);
