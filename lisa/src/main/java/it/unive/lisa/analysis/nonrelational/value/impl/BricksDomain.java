@@ -11,15 +11,15 @@ import java.util.*;
 public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     
 	protected List<Brick> bricks;
-	protected int kL = 3;
-	protected int kI = 3;
-	protected int kS = 3;
+	protected int kL = 3; // number of bricks in a list of bricks
+	protected int kI = 3; // difference between max and min
+	protected int kS = 3; // number of strings in a brick
     private Object data;
 
     public BricksDomain(List<Brick> bricks) {
         super();
-        this.bricks = bricks;
-        //this.bricks = Brick.normalize(bricks);
+        //this.bricks = bricks;
+        this.bricks = Brick.normalize(bricks);
     }
 
     public BricksDomain(Object data) {
@@ -68,8 +68,8 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
             bricks.add(new Brick(Collections.singleton(valString.substring(1, valString.length()-1)), 1,1));
             return new BricksDomain(bricks);
         }
-        //return new BricksDomain(constant.getValue());
-        return super.evalNonNullConstant(constant, pp);
+        return new BricksDomain(constant.getValue());
+       // return super.evalNonNullConstant(constant, pp);
     }
 
     @Override
@@ -108,10 +108,14 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     }
 
     public List<Brick> padList(List<Brick> list1, List<Brick> list2) {
+
         // if list2 is smaller than list1 -> return list1
         if (list2.size() <= list1.size()) {
             return list1;
         }
+        System.out.println("*** PAD LIST ***");
+        System.out.println("L1 before: " +  list1);
+        System.out.println("L2 before: " + list2);
         int sizeDiff = list2.size() - list1.size();
         List<Brick> paddedList = new ArrayList<>();
         int emptyBricksAdded = 0;
@@ -130,7 +134,9 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
                 j++;
             }
         }
-
+        System.out.println("L1: " +  list1);
+        System.out.println("L2: " + list2);
+        System.out.println("L1 padded: " + paddedList);
         return paddedList;
     }
     
@@ -157,38 +163,35 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     protected Satisfiability satisfiesTernaryExpression(TernaryOperator operator, BricksDomain left, BricksDomain middle, BricksDomain right, ProgramPoint pp) {
         return super.satisfiesTernaryExpression(operator, left, middle, right, pp);
     }
-    public int compareLists(List<Brick> list1, List<Brick> list2) {
-        if ((list2.size() == 1 && list2.get(0) instanceof TopBrick) || (list1.size() == 0)) {
-            return 1;
-        }
-        List<Brick> L1 = padList(list1, list2);
-        List<Brick> L2 = padList(list2, list1);
-        for (int i = 0; i < L2.size(); i++) {
-            if (L1.get(i).compareTo(L2.get(i)) > 0 ) {
-                // brick i of L1 is bigger than brick i of L2
-                return -1;
-            }
-        }
-        return 1;
-    }
 
     @Override
     protected BricksDomain lubAux(BricksDomain other) throws SemanticException {
+        System.out.println("*** LUB AUX ***");
+        System.out.println("L1 before: " +  bricks);
+        System.out.println("L2 before: " + other.bricks);
        List<Brick> L1 = padList(bricks, other.bricks);
        List<Brick> L2 = padList(other.bricks, bricks);
+
        List<Brick> lubElement = new ArrayList<>();
-       if(L1.size()!=L2.size())
-    	   System.out.println("Diversa lunghezza");
        for (int i = 0; i < L1.size(); i++) {
            lubElement.add(L1.get(i).lub(L2.get(i)));
        }
+        System.out.println("L1: " +  L1);
+        System.out.println("L2: " + L2);
+       System.out.println("LUB: " + lubElement);
+        System.out.println("\n");
+
        return new BricksDomain(lubElement);
     }
 
     @Override
     protected BricksDomain wideningAux(BricksDomain other) throws SemanticException {
+        System.out.println("*** WIDENING AUX ***");
+
         List<Brick> l1 = this.bricks;
         List<Brick> l2 = other.bricks;
+        System.out.println("L1 before: " +  l1);
+        System.out.println("L2 before: " + l2);
         if( (!this.lessOrEqual(other) &&
         	!other.lessOrEqual(this)) ||
         		l1.size() > this.kL || 
@@ -196,12 +199,18 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
         {
         	return this.top();
         }
+        BricksDomain widen;
         if(l1.size()>l2.size()) {
-        	return this.w(l2, l1);
+            widen =  this.w(l2, l1);
         }
         else {
-        	return this.w(l1, l2);
+            widen =  this.w(l1, l2);
         }
+        System.out.println("L1: " +  l1);
+        System.out.println("L2: " + l2);
+        System.out.println("WIDENING: " +  widen);
+        System.out.println("\n\n");
+        return widen;
         
     }
 
@@ -258,11 +267,15 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
      */
     private BricksDomain w(List<Brick> l1, List<Brick> l2) {
     	l1 = padList(l1, l2);
-    	List<Brick> newList = new ArrayList<Brick>();
+    	List<Brick> newList = new ArrayList<>();
     	for(int i = 0; i < l1.size(); i++) {
-    		newList.add(bNew(l1.get(i), l2.get(i)));
+    	    Brick b = bNew(l1.get(i), l2.get(i));
+    		newList.add(b);
     	}
+    	// newList viene modificata dentro new BricksDomain (credo dal normalize)
+        // -> se newList ha solo un TOPBRICK, dopo aver costruito il BricksDomain diventa vuoto.
     	BricksDomain newBrickDomain = new BricksDomain(newList);
+    	System.out.println(newBrickDomain);
     	return newBrickDomain;
     }
     
