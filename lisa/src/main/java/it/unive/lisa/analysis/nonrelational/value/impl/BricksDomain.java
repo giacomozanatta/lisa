@@ -272,6 +272,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     	    Brick b = bNew(l1.get(i), l2.get(i));
     		newList.add(b);
     	}
+    	System.out.println(newList);
     	// newList viene modificata dentro new BricksDomain (credo dal normalize)
         // -> se newList ha solo un TOPBRICK, dopo aver costruito il BricksDomain diventa vuoto.
     	BricksDomain newBrickDomain = new BricksDomain(newList);

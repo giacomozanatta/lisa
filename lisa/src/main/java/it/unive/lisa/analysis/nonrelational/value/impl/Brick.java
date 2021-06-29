@@ -79,7 +79,9 @@ public class Brick {
 
 
 	private static void rule1(List<Brick> brList) {
-		brList.removeIf(br -> br.getStrings().isEmpty() &&
+		brList.removeIf(br -> 
+				!(br instanceof TopBrick) &&
+				br.getStrings().isEmpty() &&
 				br.getMax() == 0 &&
 				br.getMin() == 0);
 	}
