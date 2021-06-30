@@ -19,7 +19,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
     public BricksDomain(List<Brick> bricks) {
         super();
         this.bricks = bricks;
-        //this.bricks = Brick.normalize(bricks);
+        this.bricks = Brick.normalize(bricks);
     }
 
     public BricksDomain(Object data) {
