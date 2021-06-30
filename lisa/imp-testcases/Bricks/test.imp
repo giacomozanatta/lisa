@@ -3,7 +3,7 @@ class tutorial {
     example() {
         def x = "a";
         def j = 0;
-        while(j < 10) {
+        while(j < 100) {
             x = strcat(strcat("0", x), "1");
             j = j + 1;
         }

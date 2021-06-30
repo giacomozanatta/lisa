@@ -36,7 +36,7 @@ public class Brick {
 	
 	@Override
 	public String toString() {
-		return strings + ", min=" + getMin() + ", max=" + getMax();
+		return strings + " min=" + getMin() + " max=" + getMax();
 	}
 	
 	public Set<String> getStrings() {
@@ -69,12 +69,15 @@ public class Brick {
 	}
 
 	public static List<Brick> normalize(List<Brick> brList) {
-		rule1(brList);
-		rule2(brList);
-		rule3(brList);
-		rule4(brList);
-		rule5(brList);
-		return brList;
+		if(brList.size()==1 && brList.get(0) instanceof TopBrick)
+			return brList;
+		List<Brick> cloned = BricksDomain.cloneOf(brList);
+		rule1(cloned);
+		rule2(cloned);
+		rule3(cloned);
+		rule4(cloned);
+		rule5(cloned);
+		return cloned;
 	}
 
 
@@ -206,6 +209,8 @@ public class Brick {
 	}
 
 	public Brick clone() {
+		if(this instanceof TopBrick)
+			return this;
 		Set<String> strings = new TreeSet<String>();
 		strings.addAll(this.strings);
 		return new Brick(strings, this.getMin(), this.getMax());
@@ -252,6 +257,8 @@ public class Brick {
 
 	// return the lub between two bricks
 	public Brick lub(Brick brick2) {
+		if(this instanceof TopBrick || brick2 instanceof TopBrick)
+			return new TopBrick();
 		Set<String> union = new TreeSet<>(strings);
 		union.addAll(brick2.strings);
 		return new Brick(union, Math.min(getMin(), brick2.getMin()), Math.max(getMax(), brick2.getMax()));

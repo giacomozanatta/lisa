@@ -113,9 +113,11 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
         if (list2.size() <= list1.size()) {
             return list1;
         }
+        
         System.out.println("*** PAD LIST ***");
         System.out.println("L1 before: " +  list1);
         System.out.println("L2 before: " + list2);
+        
         int sizeDiff = list2.size() - list1.size();
         List<Brick> paddedList = new ArrayList<>();
         int emptyBricksAdded = 0;
@@ -123,20 +125,20 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
 
         for (int i = 0; i < list2.size(); i++) {
             if (emptyBricksAdded >= sizeDiff) {
-                paddedList.add(list1.get(j));
+                paddedList.add(list1.get(j).clone());
                 j++; // remove head
             } else if ( j == list1.size() || !(list1.get(j).padCompare(list2.get(i)) ) ) {
             	paddedList.add(new Brick(new TreeSet<>(), 0,0)); // add empty bricks
                 emptyBricksAdded++;
             }            
             else {                
-                paddedList.add(list1.get(j));
+                paddedList.add(list1.get(j).clone());
                 j++;
             }
         }
-        System.out.println("L1: " +  list1);
-        System.out.println("L2: " + list2);
+        
         System.out.println("L1 padded: " + paddedList);
+        
         return paddedList;
     }
     
@@ -220,6 +222,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
         if ((other.bricks.size() == 1 && other.bricks.get(0) instanceof TopBrick) || (bricks.size() == 0)) {
             return true;
         }
+        System.out.println("** Lesso or equal **");
         List<Brick> L1 = padList(bricks, other.bricks);
         List<Brick> L2 = padList(other.bricks, bricks);
         for (int i = 0; i < L2.size(); i++) {
@@ -299,6 +302,7 @@ public class BricksDomain extends BaseNonRelationalValueDomain<BricksDomain> {
      * Creates a new BricksDomain containing the concatenation of left and right
      */
     private BricksDomain stringConcatAux(BricksDomain left, BricksDomain right) {
+    	System.out.println("\n** STRING CONCAT **\n");
     	List<Brick> l1 = left.getBricks();
     	List<Brick> l2 = right.getBricks();
     	List<Brick> concat = new ArrayList<Brick>();
