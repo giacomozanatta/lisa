@@ -1,6 +1,16 @@
 class tutorial { 
+
+	prog1(l) {
+		
+		def query = "SELECT $ || (RETAIL/100) FROM INVENTORY WHERE ";
+		if (l!=null)
+			query = strcat(strcat(strcat(query, "WHOLESALE > "),  l), " AND ");
+		def per = "SELECT TYPECODE, TYPEDESC FROM TYPES WHERE NAME = 'fish' OR NAME = 'meat'";
+		query = strcat(strcat(strcat(query, "TYPE IN (" ), per), ");");
+		return query;		
+	}
    
-    example() {
+    prog2() {
         def x = "a";
         def j = 0;
         while(j < 100) {
@@ -9,6 +19,17 @@ class tutorial {
         }
         return x;
     }
+    
+    prog3() {
+    	def str1 = "bob";
+    	def str2 = "o";
+    	for(def i = 0; i < 5; i = i+1) {
+    		str2 = strcat(str2, "o");
+    		str1 = strrep(str1, "o", str2);
+    	}
+    }
+    
+    
     
     /*
 	concat() {
