@@ -163,6 +163,10 @@ public class Brick {
 				toBeAdded.add(newBrick2);
 				iter.remove();
 			}
+			else {
+				toBeAdded.add(br);
+				iter.remove();
+			}
 		}
 		brList.addAll(toBeAdded);
 	}
@@ -259,7 +263,8 @@ public class Brick {
 	public Brick lub(Brick brick2) {
 		if(this instanceof TopBrick || brick2 instanceof TopBrick)
 			return new TopBrick();
-		Set<String> union = new TreeSet<>(strings);
+		Set<String> union = new TreeSet<>();
+		union.addAll(strings);
 		union.addAll(brick2.strings);
 		return new Brick(union, Math.min(getMin(), brick2.getMin()), Math.max(getMax(), brick2.getMax()));
 	}
